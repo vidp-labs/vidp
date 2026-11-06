@@ -14,6 +14,9 @@ brew tap vidp-org/vidp
 brew install --cask vidp
 ```
 
+Installed from the old `mdopeace` tap? Run `brew untap mdopeace/vidp` first, or
+Homebrew reports the cask in multiple taps.
+
 Installs `vidp.app` to `/Applications`. The `--cask` flag is optional — plain
 `brew install vidp` finds it too.
 
