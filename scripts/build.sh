@@ -32,11 +32,11 @@ cp Info.plist "$APP/Contents/"
 # App icon is prebuilt (iconutil can't run inside the Homebrew sandbox).
 # The Release workflow regenerates it on every run; to rebuild it by hand:
 # ./scripts/make-icns.sh (on your Mac, then commit it).
-if [ ! -f resources/macos/vidp.icns ]; then
-    echo "error: resources/macos/vidp.icns missing. Run ./scripts/make-icns.sh on your Mac and commit it." >&2
+if [ ! -f resources/vidp.icns ]; then
+    echo "error: resources/vidp.icns missing. Run ./scripts/make-icns.sh on your Mac and commit it." >&2
     exit 1
 fi
-cp resources/macos/vidp.icns "$APP/Contents/Resources/vidp.icns"
+cp resources/vidp.icns "$APP/Contents/Resources/vidp.icns"
 
 # GPL requires the licence text to travel with the distribution, and release
 # builds copy libmpv/FFmpeg into the bundle -- so ship the notices inside it.

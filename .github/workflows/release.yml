@@ -105,7 +105,7 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" Info.plist
           ./scripts/make-icns.sh
-          git add Info.plist resources/macos/vidp.icns
+          git add Info.plist resources/vidp.icns
 
           # A no-op bump leaves both files unchanged, and git commit would fail.
           git diff --quiet --cached && {
