@@ -1,0 +1,4 @@
+module CPIP [system] {
+    header "include/PIP.h"
+    export *
+}

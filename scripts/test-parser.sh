@@ -1,6 +1,5 @@
 #!/bin/bash
-# Runs the MediaNameParser cases (no XCTest target: the app builds via
-# `swiftc Sources/*.swift`, so tests live here, not in Sources/).
+# Runs the MediaNameParser cases without requiring libmpv or an XCTest target.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
