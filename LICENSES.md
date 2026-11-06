@@ -12,7 +12,7 @@ the one shipped in its own source distribution.
 
 These are **copyleft** licences. Bundling them makes the distributed `vidp.app`
 a combined work, so the corresponding source for the build must remain
-available. `vidp`'s own source is public at <https://github.com/mdopeace/vidp>,
+available. `vidp`'s own source is public at <https://github.com/vidp-org/vidp>,
 and every bundled library's source is obtainable from its upstream project at
 the version noted below.
 

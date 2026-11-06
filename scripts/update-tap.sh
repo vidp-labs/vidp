@@ -15,8 +15,8 @@
 # Requires: gh (authenticated), push access to the tap repo.
 set -euo pipefail
 
-REPO=mdopeace/vidp            # app repo, for building the download URL
-TAP=mdopeace/homebrew-vidp    # tap repo containing Casks/vidp.rb
+REPO=vidp-org/vidp            # app repo, for building the download URL
+TAP=vidp-org/homebrew-vidp    # tap repo containing Casks/vidp.rb
 
 VERSION=${1:?usage: update-tap.sh <version> <sha256> [--dry-run]}
 SHA256=${2:?usage: update-tap.sh <version> <sha256> [--dry-run]}

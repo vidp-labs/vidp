@@ -687,7 +687,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
 
     private func performVersionCheck(showUpToDate: Bool) {
         guard let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else { return }
-        let urlString = "https://api.github.com/repos/mdopeace/vidp/releases/latest"
+        let urlString = "https://api.github.com/repos/vidp-org/vidp/releases/latest"
         guard let url = URL(string: urlString) else { return }
 
         let task = URLSession.shared.dataTask(with: url) { data, _, error in
