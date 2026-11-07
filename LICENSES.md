@@ -13,8 +13,7 @@ the one shipped in its own source distribution.
 These are **copyleft** licences. Bundling them makes the distributed `vidp.app`
 a combined work, so the corresponding source for the build must remain
 available. `vidp`'s own source is public at <https://github.com/vidp-org/vidp>,
-and every bundled library's source is obtainable from its upstream project at
-the version noted below.
+and every bundled library's source is obtainable from its upstream project.
 
 | Library | Licence | Upstream |
 |---|---|---|
@@ -24,12 +23,22 @@ the version noted below.
 | ffmpeg (libav\*, libsw\*) | LGPL-2.1-or-later (this build) | <https://ffmpeg.org> |
 | libbluray | LGPL-2.1-or-later | <https://code.videolan.org/videolan/libbluray> |
 | glib-2.0 | LGPL-2.1-or-later | <https://gitlab.gnome.org/GNOME/glib> |
-| graphite2 | MIT | <https://github.com/silnrsi/graphite> |
+| fribidi | LGPL-2.1-or-later | <https://github.com/fribidi/fribidi> |
+| x264 | GPL-2.0-or-later (see note) | <https://code.videolan.org/videolan/x264> |
+| x265 | GPL-2.0-or-later | <https://bitbucket.org/multicoreware/x265_git> |
+| mp3lame | LGPL-2.0 | <https://lame.sourceforge.io/> |
+| mpg123 | LGPL-2.1 | <https://www.mpg123.de/> |
+| libudfread | LGPL-2.1+ | <https://code.videolan.org/videolan/libudfread> |
+| libunibreak | LGPL-2.1+ | <https://github.com/adah1972/libunibreak> |
 
 `rubberband` is the binding constraint: GPL-2.0-or-later in the closure means
 the distributed app as a whole is offered under GPL terms. The Homebrew `ffmpeg`
 build linked here is the LGPL configuration, so it adds no further restriction
 beyond rubberband's.
+
+Note: `x264` and `x265` are GPL-2.0-or-later, which independently places this
+bundle under GPL terms regardless of the FFmpeg build's configuration. They are
+present because `libavcodec` links the encoders; this app never invokes them.
 
 ## Permissive
 
@@ -46,13 +55,10 @@ you may use or redistribute this app.
 | little-cms2 (liblcms2) | MIT |
 | luajit | MIT |
 | uchardet | MIT |
-| fribidi | LGPL-2.1-or-later |
 | harfbuzz | MIT (Old Style) |
 | freetype | FTL (BSD-style) / GPL-2.0 dual |
 | dav1d | BSD-2-Clause |
 | libvpx | BSD-3-Clause |
-| x264 | GPL-2.0-or-later (see note) |
-| x265 | GPL-2.0-or-later |
 | SvtAv1Enc | BSD-3-Clause |
 | libvmaf | BSD-3-Clause |
 | libshaderc | Apache-2.0 |
@@ -60,16 +66,9 @@ you may use or redistribute this app.
 | zlib | zlib |
 | zstd | BSD-3-Clause |
 | LZ4 (liblz4) | BSD-2-Clause |
-| mp3lame | LGPL-2.0 |
-| mpg123 | LGPL-2.1 |
+| graphite2 | MIT |
 | opus | BSD-3-Clause |
-| libudfread | LGPL-2.1+ |
-| libunibreak | LGPL-2.1+ |
 | libsamplerate | BSD-2-Clause |
-
-Note: `x264` and `x265` are GPL-2.0-or-later, which independently places this
-bundle under GPL terms regardless of the FFmpeg build's configuration. They are
-present because `libavcodec` links the encoders; this app never invokes them.
 
 ## Determining what is actually bundled
 
