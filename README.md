@@ -73,17 +73,17 @@ Requires [Homebrew](https://brew.sh), Xcode Command Line Tools (`swiftc`, `sips`
 and libmpv:
 
 ```sh
-brew install mpv
+brew install mpv pkg-config
 ./scripts/build.sh        # produces ./vidp.app
 open vidp.app
 ```
 
 ## Requirements
 
-- macOS 13+ (Apple Silicon for prebuilt releases; Intel can build from source)
+- macOS 26+ (Apple Silicon for prebuilt releases; Intel can build from source)
 
 Building from source additionally needs [Homebrew](https://brew.sh), the Xcode
-Command Line Tools, and libmpv (`brew install mpv`). Release builds bundle
+Command Line Tools, libmpv, and pkg-config (`brew install mpv pkg-config`). Release builds bundle
 libmpv into the app itself, so end users need none of this.
 
 ## Features

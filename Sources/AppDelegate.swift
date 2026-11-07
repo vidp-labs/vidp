@@ -3,6 +3,9 @@ import CryptoKit
 import MediaPlayer
 import UniformTypeIdentifiers
 import CMPV
+#if canImport(CPIP)
+import CPIP
+#endif
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, PlayerDelegate, PIPViewControllerDelegate, NSMenuItemValidation {
     private static let homepageContentSize = NSSize(width: 1000, height: 650)
@@ -31,7 +34,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     private let applicationPath = URL(fileURLWithPath: "/Applications/vidp.app")
     private static let supportURL = URL(string: "https://buymeacoffee.com/mdopeace")!
 
+    #if SWIFT_PACKAGE
+    /// Repo root, home to the files SwiftPM does not copy into the executable.
+    private static var projectRoot: URL {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+    }
+    #endif
+
+    private var appVersion: String? {
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return version
+        }
+
+        #if SWIFT_PACKAGE
+        let plistURL = Self.projectRoot.appendingPathComponent("Info.plist")
+        if let data = try? Data(contentsOf: plistURL),
+           let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
+            return plist["CFBundleShortVersionString"] as? String
+        }
+        #endif
+
+        return nil
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
+        #if SWIFT_PACKAGE
+        // SwiftPM launches the executable directly, outside an .app bundle,
+        // so Launch Services has no bundle icon to show in the Dock. Load the
+        // canonical icon used by scripts/build.sh without duplicating it.
+        let iconURL = Self.projectRoot.appendingPathComponent("resources/vidp.icns")
+        if let icon = NSImage(contentsOf: iconURL) {
+            NSApp.applicationIconImage = icon
+        }
+        #endif
+
         setupMainMenu()
 
         playerView = PlayerView(frame: .zero)
@@ -334,6 +370,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
 
     // MARK: - Modal panels
 
+    private func makeAlert() -> NSAlert {
+        let alert = NSAlert()
+        alert.icon = NSApp.applicationIconImage
+        return alert
+    }
+
     /// Set while runModalPaused holds playback, so a hold outliving its panel
     /// (an update download) can be handed back.
     private var pausedByModalPanel = false
@@ -549,6 +591,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         // Document panels cannot stack with another sheet or modal panel.
         switch menuItem.action {
+        case #selector(makeDefaultPlayer), #selector(uninstallApp):
+            // These Launch Services and app-bundle operations require a real
+            // Vidp.app; a SwiftPM executable has no registered bundle identity.
+            return Bundle.main.bundleIdentifier != nil
         case #selector(openDocument):
             guard let window, window.attachedSheet == nil, NSApp.modalWindow == nil else { return false }
             return true
@@ -593,7 +639,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     }
 
     @objc private func makeDefaultPlayer() {
-        let bundleID = Bundle.main.bundleIdentifier! as CFString
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return }
+        let bundleID = bundleIdentifier as CFString
         let types = [
             "org.matroska.mkv",
             "io.iina.mkv",
@@ -605,7 +652,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
         for uti in types {
             LSSetDefaultRoleHandlerForContentType(uti as CFString, .all, bundleID)
         }
-        let alert = NSAlert()
+        let alert = makeAlert()
         alert.messageText = "Default Player Set"
         alert.informativeText = "Vidp is now the default player for all supported video types."
         alert.alertStyle = .informational
@@ -616,7 +663,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     // MARK: - Uninstall
 
     @objc private func uninstallApp() {
-        let alert = NSAlert()
+        // SwiftPM runs the executable outside an app bundle. Avoid treating the
+        // .build directory as an uninstallable app during development.
+        guard Bundle.main.bundleIdentifier != nil else { return }
+
+        let alert = makeAlert()
         alert.messageText = "Remove Vidp?"
         alert.informativeText = "Choose how to remove Vidp from your system."
         alert.alertStyle = .warning
@@ -650,7 +701,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
                     return
                 }
                 NSLog("vidp: failed to remove app: \(error)")
-                let errAlert = NSAlert()
+                let errAlert = self.makeAlert()
                 errAlert.messageText = "Could not remove Vidp"
                 errAlert.informativeText = error.localizedDescription
                 errAlert.alertStyle = .critical
@@ -663,8 +714,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     // MARK: - Version Check
 
     @objc private func showAbout() {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-        let alert = NSAlert()
+        let version = appVersion ?? ""
+        let alert = makeAlert()
         alert.messageText = "Vidp"
         alert.informativeText = version.isEmpty ? "" : "Version \(version)"
         alert.alertStyle = .informational
@@ -686,7 +737,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     }
 
     private func performVersionCheck(showUpToDate: Bool) {
-        guard let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else { return }
+        guard let currentVersion = appVersion else { return }
         let urlString = "https://api.github.com/repos/vidp-org/vidp/releases/latest"
         guard let url = URL(string: urlString) else { return }
 
@@ -696,7 +747,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
                   let tagName = json["tag_name"] as? String else {
                 if showUpToDate {
                     DispatchQueue.main.async {
-                        let alert = NSAlert()
+                        let alert = self.makeAlert()
                         alert.messageText = "Couldn't Check for Updates"
                         alert.informativeText = "Couldn't reach the update server. You're still on Vidp v\(currentVersion)."
                         alert.alertStyle = .informational
@@ -711,7 +762,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
             guard latestVersion != currentVersion else {
                 if showUpToDate {
                     DispatchQueue.main.async {
-                        let alert = NSAlert()
+                        let alert = self.makeAlert()
                         alert.messageText = "You're up to date"
                         alert.informativeText = "Vidp v\(currentVersion) is the latest version."
                         alert.alertStyle = .informational
@@ -723,18 +774,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
             }
 
             DispatchQueue.main.async {
-                let alert = NSAlert()
+                let alert = self.makeAlert()
                 alert.messageText = "Update Available"
-                let playingNote = (self.hudOverlay?.isFileLoaded ?? false)
+                let isPackagedApp = Bundle.main.bundleIdentifier != nil
+                let playingNote = isPackagedApp && (self.hudOverlay?.isFileLoaded ?? false)
                     ? " Your video will be closed and reopened where you left off."
                     : ""
                 alert.informativeText = "A new version of Vidp is available: v\(latestVersion) (you have v\(currentVersion)).\(playingNote)"
                 alert.alertStyle = .informational
-                alert.addButton(withTitle: "Download")
+                alert.addButton(withTitle: isPackagedApp ? "Download" : "View Release")
                 alert.addButton(withTitle: "Later")
                 self.runModalPaused {
                     if alert.runModal() == .alertFirstButtonReturn {
-                        self.downloadAndInstallUpdate(from: json, version: latestVersion)
+                        if isPackagedApp {
+                            self.downloadAndInstallUpdate(from: json, version: latestVersion)
+                        } else if let urlString = json["html_url"] as? String,
+                                  let url = URL(string: urlString) {
+                            NSWorkspace.shared.open(url)
+                        }
                     }
                 }
             }
@@ -867,7 +924,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     }
 
     private func showUpdateReady(version: String) {
-        let alert = NSAlert()
+        let alert = makeAlert()
         alert.messageText = "Update Ready to Restart"
         alert.informativeText = "Vidp v\(version) has been installed. Restart now to use the update, or choose Later to keep using this session."
         alert.alertStyle = .informational
@@ -908,7 +965,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     }
 
     private func showUpdateError(_ message: String) {
-        let alert = NSAlert()
+        let alert = makeAlert()
         alert.messageText = "Update Failed"
         alert.informativeText = message
         alert.alertStyle = .warning

@@ -13,13 +13,14 @@ APP=vidp.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
-swiftc -O -swift-version 5 \
+swiftc -O -swift-version 5 -target "$(uname -m)-apple-macosx26.0" \
     -framework AppKit \
     -framework MediaPlayer \
     -F/System/Library/PrivateFrameworks \
     -framework PIP \
     -import-bridging-header vidp-Bridging-Header.h \
-    -I . \
+    -I Sources/CMPV \
+    -I Sources/CPIP \
     -Xcc -I"$MPV_PREFIX/include" \
     -L "$MPV_PREFIX/lib" \
     -lmpv \

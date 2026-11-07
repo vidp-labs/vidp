@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "name": "Debug Vidp",
+      "target": "Vidp",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug Vidp"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "name": "Release Vidp",
+      "target": "Vidp",
+      "configuration": "release",
+      "preLaunchTask": "swift: Build Release Vidp"
+    }
+  ]
+}

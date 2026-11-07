@@ -30,7 +30,9 @@ permissions:
 
 jobs:
   publish:
-    runs-on: macos-latest
+    # Build and bundle dependencies on the supported minimum OS so Homebrew
+    # does not silently raise the release's minimum when macos-latest advances.
+    runs-on: macos-26
     outputs:
       version: ${{ steps.resolve.outputs.version }}
       sha: ${{ steps.build.outputs.sha }}
