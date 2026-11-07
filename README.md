@@ -3,7 +3,7 @@
 A minimal, keyboard-driven macOS video player built on [libmpv](https://mpv.io), written in Swift/AppKit.
 No Electron, no bloat — just a fast native player that plays nearly anything mpv can.
 
-<img src="docs/screenshots/paused.png" alt="Vidp playing a video, with the transport controls and the film title at the bottom" width="300">
+<img src="https://vidp-labs.github.io/screenshots/paused.png" alt="Vidp playing a video, with the transport controls and the film title at the bottom" width="300">
 
 ## Install
 
@@ -124,7 +124,7 @@ app under GPL terms.
 
 ## Links
 
-- Homepage: <https://vidp-labs.github.io/vidp/>
+- Homepage: <https://vidp-labs.github.io/>
 - Homebrew tap: [vidp-labs/homebrew-vidp](https://github.com/vidp-labs/homebrew-vidp)
 - Releases: <https://github.com/vidp-labs/vidp/releases>
 
