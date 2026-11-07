@@ -34,7 +34,7 @@ cask "vidp" do
   desc "Minimal keyboard-driven video player built on libmpv"
   homepage "https://github.com/$REPO"
 
-  depends_on macos: :ventura
+  depends_on macos: :tahoe
 
   app "vidp.app"
 
