@@ -52,7 +52,7 @@ jobs:
           fi
           # Read the value, not just the exit code: a token with read but not
           # push prints false and still exits 0, which would fail mid-publish.
-          [ "$(gh api repos/vidp-org/homebrew-vidp --jq '.permissions.push')" = true ] \
+          [ "$(gh api repos/vidp-labs/homebrew-vidp --jq '.permissions.push')" = true ] \
             || { echo "::error::HOMEBREW_TAP_TOKEN cannot push to the tap repo"; exit 1; }
 
       # Unlike QuickTodo's SwiftPM build, build.sh links libmpv: the bundle is
@@ -169,9 +169,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: vidp-org/homebrew-vidp
+          repository: vidp-labs/homebrew-vidp
           ref: main
-          path: vidp-org/homebrew-vidp
+          path: vidp-labs/homebrew-vidp
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
 
       - uses: actions/checkout@v4
@@ -185,4 +185,4 @@ jobs:
           SHA: ${{ needs.publish.outputs.sha }}
         run: |
           set -euo pipefail
-          TAP_DIR=vidp-org/homebrew-vidp ./app/scripts/update-tap.sh "$VERSION" "$SHA"
+          TAP_DIR=vidp-labs/homebrew-vidp ./app/scripts/update-tap.sh "$VERSION" "$SHA"

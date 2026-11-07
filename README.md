@@ -10,7 +10,7 @@ No Electron, no bloat — just a fast native player that plays nearly anything m
 ### via Homebrew (recommended)
 
 ```sh
-brew tap vidp-org/vidp
+brew tap vidp-labs/vidp
 brew install --cask vidp
 ```
 
@@ -124,9 +124,9 @@ app under GPL terms.
 
 ## Links
 
-- Homepage: <https://vidp-org.github.io/vidp/>
-- Homebrew tap: [vidp-org/homebrew-vidp](https://github.com/vidp-org/homebrew-vidp)
-- Releases: <https://github.com/vidp-org/vidp/releases>
+- Homepage: <https://vidp-labs.github.io/vidp/>
+- Homebrew tap: [vidp-labs/homebrew-vidp](https://github.com/vidp-labs/homebrew-vidp)
+- Releases: <https://github.com/vidp-labs/vidp/releases>
 
 ## Releases
 
@@ -140,7 +140,7 @@ From the terminal, `gh workflow run release.yml -f bump=minor` does the same.
 
 One-time setup: the workflow pushes to the tap using the repository secret
 `HOMEBREW_TAP_TOKEN` (Settings → Secrets and variables → Actions). It needs
-write access to `vidp-org/homebrew-vidp` — the default `GITHUB_TOKEN` cannot
+write access to `vidp-labs/homebrew-vidp` — the default `GITHUB_TOKEN` cannot
 reach another repo, so without it the release publishes and only the tap
 update fails.
 
