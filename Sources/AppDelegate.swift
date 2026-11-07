@@ -34,15 +34,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
     private let applicationPath = URL(fileURLWithPath: "/Applications/vidp.app")
     private static let supportURL = URL(string: "https://buymeacoffee.com/mdopeace")!
 
+    #if SWIFT_PACKAGE
+    /// Repo root, home to the files SwiftPM does not copy into the executable.
+    private static var projectRoot: URL {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+    }
+    #endif
+
     private var appVersion: String? {
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             return version
         }
 
         #if SWIFT_PACKAGE
-        let sourceDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-        let projectRoot = sourceDirectory.deletingLastPathComponent()
-        let plistURL = projectRoot.appendingPathComponent("Info.plist")
+        let plistURL = Self.projectRoot.appendingPathComponent("Info.plist")
         if let data = try? Data(contentsOf: plistURL),
            let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
             return plist["CFBundleShortVersionString"] as? String
@@ -57,9 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
         // SwiftPM launches the executable directly, outside an .app bundle,
         // so Launch Services has no bundle icon to show in the Dock. Load the
         // canonical icon used by scripts/build.sh without duplicating it.
-        let sourceDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-        let projectRoot = sourceDirectory.deletingLastPathComponent()
-        let iconURL = projectRoot.appendingPathComponent("resources/vidp.icns")
+        let iconURL = Self.projectRoot.appendingPathComponent("resources/vidp.icns")
         if let icon = NSImage(contentsOf: iconURL) {
             NSApp.applicationIconImage = icon
         }
@@ -774,7 +777,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
                 let alert = self.makeAlert()
                 alert.messageText = "Update Available"
                 let isPackagedApp = Bundle.main.bundleIdentifier != nil
-                let playingNote = (self.hudOverlay?.isFileLoaded ?? false)
+                let playingNote = isPackagedApp && (self.hudOverlay?.isFileLoaded ?? false)
                     ? " Your video will be closed and reopened where you left off."
                     : ""
                 alert.informativeText = "A new version of Vidp is available: v\(latestVersion) (you have v\(currentVersion)).\(playingNote)"

@@ -16,3 +16,9 @@ jobs:
       # No XCTest target yet; MediaNameParser is tested by a small standalone
       # script and does not need libmpv installed.
       - run: ./scripts/test-parser.sh
+
+      # Keep the SwiftPM build (the VS Code launch path) in step with build.sh.
+      - name: Build SwiftPM package
+        run: |
+          brew install mpv pkg-config
+          swift build -c debug
