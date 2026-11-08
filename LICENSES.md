@@ -5,8 +5,16 @@
 `brew install mpv`. Those binaries remain the work of their own authors and are
 covered by their own licences, reproduced or referenced below.
 
-This file is informational. The authoritative licence text for each library is
-the one shipped in its own source distribution.
+This file records the third-party licence notices and obligations for the
+distributed app. The authoritative licence text for each library is the one
+provided by its own source distribution.
+
+The actual GPL-2.0 and LGPL-2.1 texts used by the bundled components are
+included in the `licenses/` directory and copied into each app bundle. The
+corresponding Vidp source and build scripts are available from the matching
+release tag in this repository. Source for third-party components is available
+from the upstream links below and under the written offer in
+[SOURCE-OFFER.md](SOURCE-OFFER.md).
 
 ## Copyleft
 
@@ -39,6 +47,11 @@ beyond rubberband's.
 Note: `x264` and `x265` are GPL-2.0-or-later, which independently places this
 bundle under GPL terms regardless of the FFmpeg build's configuration. They are
 present because `libavcodec` links the encoders; this app never invokes them.
+
+The GPL terms apply to the distributed combined release build as required by
+the GPL. The original Vidp source license in [LICENSE](LICENSE) grants the
+corresponding GPL permissions for any such combined build; it does not remove
+or restrict the rights granted by the third-party licenses.
 
 ## Permissive
 
@@ -78,5 +91,5 @@ The list above covers the known closure. To regenerate it from a built app:
 ls vidp.app/Contents/Frameworks/*.dylib | sed 's/.*\/lib//; s/\.dylib//'
 ```
 
-Exact versions are those resolved by `brew --prefix mpv` at build time and
-recorded in the release tag for a given `vidp` version.
+The release workflow must preserve the exact dependency versions used for each
+distributed build so the corresponding third-party source can be identified.

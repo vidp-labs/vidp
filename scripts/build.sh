@@ -39,9 +39,14 @@ if [ ! -f resources/vidp.icns ]; then
 fi
 cp resources/vidp.icns "$APP/Contents/Resources/vidp.icns"
 
-# GPL requires the licence text to travel with the distribution, and release
-# builds copy libmpv/FFmpeg into the bundle -- so ship the notices inside it.
+# License terms must travel with the distribution, and release builds copy
+# libmpv/FFmpeg into the bundle -- so ship both notices inside it.
+mkdir -p "$APP/Contents/Resources/licenses"
+cp LICENSE "$APP/Contents/Resources/LICENSE"
 cp LICENSES.md "$APP/Contents/Resources/LICENSES.md"
+cp SOURCE-OFFER.md "$APP/Contents/Resources/SOURCE-OFFER.md"
+cp licenses/GPL-2.0-or-later.txt "$APP/Contents/Resources/licenses/GPL-2.0-or-later.txt"
+cp licenses/LGPL-2.1-or-later.txt "$APP/Contents/Resources/licenses/LGPL-2.1-or-later.txt"
 
 # Bundle the libmpv closure so the app is self-contained. The cask ships a
 # prebuilt binary, and a binary still linked to /opt/homebrew/... only launches

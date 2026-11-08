@@ -113,7 +113,23 @@ libmpv into the app itself, so end users need none of this.
 
 ## License
 
-[MIT](LICENSE) © 2026 Md Mostafijur Rahman.
+The original Vidp source and content are licensed under the [Vidp
+Source-Available License](LICENSE) © 2026 Md Mostafijur Rahman. You may
+download, build, use, and redistribute unmodified copies of Vidp, but you may
+not publish modified, rebranded, or competing versions under the source-
+available terms.
+
+This is a source-available license, not an OSI-approved open-source license.
+Release builds containing GPL-licensed components receive the additional GPL
+permissions required for that combined work. Third-party components remain
+under their own licenses; see [LICENSES.md](LICENSES.md). The corresponding
+Vidp source and build scripts are available from the matching Git tag in this
+repository. The exact source for bundled third-party components is identified
+by the release's dependency versions and documented upstream in
+[LICENSES.md](LICENSES.md); the tag does not itself vendor those third-party
+source trees. Release distribution must preserve the source-availability
+requirements of each bundled component's license; see the written
+[source offer](SOURCE-OFFER.md).
 
 This project links against [libmpv](https://mpv.io), which remains under its own
 [LGPL/GPL license](https://github.com/mpv-player/mpv/blob/master/Copyright).

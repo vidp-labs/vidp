@@ -1,21 +1,97 @@
-MIT License
+Vidp Source-Available License v1.0
 
-Copyright (c) 2026 Md Mostafijur Rahman
+Copyright 2026 Md Mostafijur Rahman
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license governs the original Vidp application source code and other
+original content in this repository (the "Vidp Materials"). By using,
+copying, building, or distributing the Vidp Materials, you accept this
+license.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Permissions
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+You are granted a worldwide, non-exclusive, royalty-free license to:
+
+- view and study the Vidp Materials;
+- download and retain copies of the Vidp Materials;
+- build and run the Vidp Materials; and
+- reproduce and distribute unmodified copies of the Vidp Materials in source
+  or binary form, provided that you comply with this license and preserve all
+  notices.
+
+2. Conditions
+
+You must:
+
+- include this license with every distribution of the Vidp Materials;
+- retain all copyright, trademark, attribution, and other notices;
+- identify the official Vidp project when referring to an unmodified copy; and
+- clearly identify any distribution that is not an official Vidp
+  release.
+
+3. Restrictions on the Vidp Materials
+
+Except as permitted by Section 4, you may not, without separate written
+permission from the copyright holder:
+
+- modify, adapt, translate, or create derivative works of the Vidp Materials;
+- publish, distribute, sell, sublicense, or provide a modified or rebranded
+  version of the Vidp Materials;
+- use the Vidp name, logos, icons, or other branding to suggest that a
+  modified or competing product is official;
+- remove or obscure notices, attribution, or license terms; or
+- use the Vidp Materials as the basis of a competing public video-player
+  product.
+
+Nothing in this license limits rights that cannot legally be restricted under
+applicable law.
+
+4. GPL release-build compatibility
+
+Some official Vidp release builds include GPL-licensed components identified in
+LICENSES.md. To the extent a distribution of the Vidp Materials forms a
+combined work with a GPL-licensed component, the Vidp Materials included in
+that combined work are additionally licensed under GPL-2.0-or-later as part
+of that combined work.
+
+For such a combined work, you may modify and redistribute the combined work
+under GPL-2.0-or-later and the applicable licenses of its third-party
+components. This section prevails over conflicting restrictions in Section 3
+when the combined work is distributed under those terms. It does not grant
+permission to use Vidp trademarks or branding to imply official endorsement.
+
+5. Contributions
+
+Unless a separate written agreement says otherwise, any contribution
+intentionally submitted for inclusion in the Vidp Materials is provided under
+this license and may be used by the copyright holder in the Vidp project.
+
+6. Third-party components
+
+The Vidp Materials include or depend on third-party components governed by
+their own licenses. Those licenses are not replaced or restricted by this
+license. See LICENSES.md for the known licenses of bundled components.
+
+7. Trademarks
+
+This license does not grant permission to use the Vidp name, logos, icons, or
+other trademarks except for accurate factual references to the official
+project, identification of an unmodified copy, or the requirements of
+Section 4.
+
+8. Disclaimer of warranty
+
+THE VIDP MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. YOU
+ARE SOLELY RESPONSIBLE FOR DETERMINING WHETHER THE VIDP MATERIALS ARE
+SUITABLE FOR YOUR USE.
+
+9. Limitation of liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT HOLDER SHALL NOT BE
+LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR EXEMPLARY
+DAMAGES, OR FOR ANY LOSS OF DATA, PROFITS, GOODWILL, OR BUSINESS INTERRUPTION,
+ARISING FROM OR RELATED TO THE VIDP MATERIALS OR THIS LICENSE.
+
+This is a custom source-available license. It is not an OSI-approved
+open-source license.
