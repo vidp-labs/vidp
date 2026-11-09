@@ -86,6 +86,28 @@ each library is copied into `licenses/<package>/` in the app bundle.
 
 `zlib` is provided by macOS (`/usr/lib/libz.1.dylib`) and is not bundled.
 
+## Release obligations
+
+For every release, `scripts/build.sh` copies the notices found in each bundled
+Homebrew package into `Contents/Resources/licenses/<package>/` and records the
+resolved package versions in `Contents/Resources/licenses/VERSIONS.txt`.
+
+The main obligations are:
+
+- **GPL:** preserve the license, provide the corresponding source, and keep the
+  GPL freedoms for the combined release build.
+- **LGPL:** preserve the license and notices, provide the corresponding source,
+  and keep the relinking rights required by the license.
+- **MPL:** preserve the license and its file-level terms for covered files.
+- **BSD, ISC, MIT, Zlib, Apache, and similar licenses:** preserve the required
+  copyright, license, and notice text. Apache-licensed components also retain
+  their applicable NOTICE and patent terms.
+
+The exact license text and obligations for a shipped version are the ones in
+the release bundle and the corresponding upstream source distribution. The
+written [source offer](SOURCE-OFFER.md) covers the GPL- and LGPL-licensed
+components in releases that include this notice.
+
 ## Determining what is actually bundled
 
 The tables above list the main components; the complete list of bundled
