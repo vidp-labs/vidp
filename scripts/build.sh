@@ -40,12 +40,14 @@ fi
 cp resources/vidp.icns "$APP/Contents/Resources/vidp.icns"
 
 # License terms must travel with the distribution, and release builds copy
-# libmpv/FFmpeg into the bundle -- so ship both notices inside it.
+# libmpv/FFmpeg into the bundle -- so ship the notices and each bundled
+# library's own licence files inside it.
 mkdir -p "$APP/Contents/Resources/licenses"
 cp LICENSE "$APP/Contents/Resources/LICENSE"
 cp LICENSES.md "$APP/Contents/Resources/LICENSES.md"
 cp SOURCE-OFFER.md "$APP/Contents/Resources/SOURCE-OFFER.md"
 cp licenses/GPL-2.0-or-later.txt "$APP/Contents/Resources/licenses/GPL-2.0-or-later.txt"
+cp licenses/GPL-3.0-or-later.txt "$APP/Contents/Resources/licenses/GPL-3.0-or-later.txt"
 cp licenses/LGPL-2.1-or-later.txt "$APP/Contents/Resources/licenses/LGPL-2.1-or-later.txt"
 
 # Bundle the libmpv closure so the app is self-contained. The cask ships a
@@ -54,6 +56,33 @@ cp licenses/LGPL-2.1-or-later.txt "$APP/Contents/Resources/licenses/LGPL-2.1-or-
 # need a separate `brew install mpv` and would break on every other Mac.
 FRAMEWORKS="$APP/Contents/Frameworks"
 mkdir -p "$FRAMEWORKS"
+
+# Collect each bundled library's licence files from its Homebrew package root
+# and record the resolved versions, so the notices and source offer travel
+# with the app.
+PKGS=$(mktemp)
+copy_licenses() {
+    local dep=$1 root pkg
+    root=$(dirname "$(dirname "$dep")")
+    [ -d "$root" ] || return 0
+    printf '%s\n' "$root" >> "$PKGS"
+    case "$root" in
+        */Cellar/*) pkg=$(basename "$(dirname "$root")") ;;
+        *) pkg=$(basename "$root") ;;
+    esac
+    mkdir -p "$APP/Contents/Resources/licenses/$pkg"
+    # shortcut: only root-level licence files are copied; if a Homebrew package
+    # starts nesting its licence in a subdirectory, extend this find.
+    find -L "$root" -maxdepth 1 -type f \
+        \( -iname 'COPYING*' -o -iname 'COPYRIGHT*' -o -iname '*LICENCE*' \
+           -o -iname '*LICENSE*' -o -iname 'NOTICE*' -o -iname 'LGPL*' \
+           -o -iname 'GPL*' -o -iname 'MIT*' -o -iname 'BSD*' \
+           -o -iname 'ISC*' -o -iname 'APACHE*' -o -iname 'ZLIB*' \
+           -o -iname 'MPL*' \) ! -iname '*.cfg' \
+        2>/dev/null | while read -r f; do
+            cp -L "$f" "$APP/Contents/Resources/licenses/$pkg/" 2>/dev/null || true
+        done || true
+}
 
 # libmpv alone pulls in ~47 more non-system dylibs (ffmpeg, libplacebo, x264,
 # x265, rubberband, ...), so this has to recurse rather than copy one.
@@ -64,7 +93,7 @@ mkdir -p "$FRAMEWORKS"
 # directory is what resolves it. Queueing the bundle copy instead resolved
 # @rpath against Contents/Frameworks and silently dropped the dylib.
 QUEUE=$(mktemp)
-trap 'rm -f "$QUEUE" "$QUEUE.next"' EXIT
+trap 'rm -f "$QUEUE" "$QUEUE.next" "$PKGS" "$PKGS.versions"' EXIT
 printf '%s\n' "$APP/Contents/MacOS/vidp" > "$QUEUE"
 while [ -s "$QUEUE" ]; do
     : > "$QUEUE.next"
@@ -79,11 +108,29 @@ while [ -s "$QUEUE" ]; do
             name=$(basename "$dep")
             [ -f "$FRAMEWORKS/$name" ] && continue
             cp -L "$dep" "$FRAMEWORKS/$name"
+            copy_licenses "$dep"
             printf '%s\n' "$dep" >> "$QUEUE.next"
         done
     done < "$QUEUE"
     mv "$QUEUE.next" "$QUEUE"
 done
+
+# Record the resolved package versions so SOURCE-OFFER.md can identify the
+# exact corresponding source for a release.
+brew list --versions > "$PKGS.versions" 2>/dev/null || true
+{
+    printf '%s\n' "# Bundled library versions (resolved by Homebrew at build time)"
+    sort -u "$PKGS" | while read -r root; do
+        case "$root" in
+            */Cellar/*) pkg=$(basename "$(dirname "$root")"); version=$(basename "$root") ;;
+            *) pkg=$(basename "$root"); version=$(basename "$(readlink "$root" 2>/dev/null || true)") ;;
+        esac
+        # Fall back to the newest installed keg if the package root is not a
+        # versioned Cellar path or a Homebrew opt symlink.
+        [ -n "$version" ] || version=$(awk -v p="$pkg" '$1 == p {print $NF}' "$PKGS.versions")
+        if [ -n "$version" ]; then printf '%s %s\n' "$pkg" "$version"; fi
+    done | sort -u
+} > "$APP/Contents/Resources/licenses/VERSIONS.txt"
 
 # Repoint every recorded reference at the bundled copy. Match on the literal
 # string in LC_LOAD_DYLIB, not the symlink target, or the rewrite silently no-ops.

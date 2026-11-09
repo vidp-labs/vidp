@@ -48,13 +48,14 @@ applicable law.
 4. GPL release-build compatibility
 
 Some official Vidp release builds include GPL-licensed components identified in
-LICENSES.md. To the extent a distribution of the Vidp Materials forms a
-combined work with a GPL-licensed component, the Vidp Materials included in
-that combined work are additionally licensed under GPL-2.0-or-later as part
-of that combined work.
+LICENSES.md. The Homebrew FFmpeg build bundled in release builds is
+GPL-3.0-or-later, so the combined work is distributed under GPL-3.0-or-later.
+To the extent a distribution of the Vidp Materials forms a combined work with a
+GPL-licensed component, the Vidp Materials included in that combined work are
+additionally licensed under GPL-3.0-or-later as part of that combined work.
 
 For such a combined work, you may modify and redistribute the combined work
-under GPL-2.0-or-later and the applicable licenses of its third-party
+under GPL-3.0-or-later and the applicable licenses of its third-party
 components. This section prevails over conflicting restrictions in Section 3
 when the combined work is distributed under those terms. It does not grant
 permission to use Vidp trademarks or branding to imply official endorsement.

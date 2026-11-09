@@ -17,6 +17,10 @@ jobs:
       # script and does not need libmpv installed.
       - run: ./scripts/test-parser.sh
 
+      # The release workflow runs build.sh; catch syntax errors before a tag.
+      - name: Check build script syntax
+        run: bash -n scripts/build.sh
+
       # Keep the SwiftPM build (the VS Code launch path) in step with build.sh.
       - name: Build SwiftPM package
         run: |

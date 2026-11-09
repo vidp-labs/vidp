@@ -121,22 +121,22 @@ available terms.
 
 This is a source-available license, not an OSI-approved open-source license.
 Release builds containing GPL-licensed components receive the additional GPL
-permissions required for that combined work. Third-party components remain
+permissions required for that combined work; because the bundled FFmpeg is
+GPL-3.0-or-later, that combined work is distributed under GPL-3.0-or-later.
+Third-party components remain
 under their own licenses; see [LICENSES.md](LICENSES.md). The corresponding
 Vidp source and build scripts are available from the matching Git tag in this
-repository. The exact source for bundled third-party components is identified
-by the release's dependency versions and documented upstream in
-[LICENSES.md](LICENSES.md); the tag does not itself vendor those third-party
-source trees. Release distribution must preserve the source-availability
-requirements of each bundled component's license; see the written
-[source offer](SOURCE-OFFER.md).
+repository. The tag does not itself vendor the third-party source trees.
+Release distribution must preserve the source-availability requirements of
+each bundled component's license; see the upstream references in
+[LICENSES.md](LICENSES.md) and the written [source offer](SOURCE-OFFER.md).
 
 This project links against [libmpv](https://mpv.io), which remains under its own
 [LGPL/GPL license](https://github.com/mpv-player/mpv/blob/master/Copyright).
 Release builds ship copies of libmpv, FFmpeg and their dependencies inside the
-app bundle; see [LICENSES.md](LICENSES.md) for those, and note that
-`rubberband`, `x264` and `x265` are GPL-2.0-or-later, which puts the distributed
-app under GPL terms.
+app bundle; see [LICENSES.md](LICENSES.md) for those, and note that FFmpeg is
+GPL-3.0-or-later and `rubberband`, `x264` and `x265` are GPL-2.0-or-later, which
+puts the distributed app under GPL-3.0-or-later terms.
 
 ## Links
 
