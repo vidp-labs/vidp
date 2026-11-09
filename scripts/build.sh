@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 MPV_PREFIX="${MPV_PREFIX:-$(brew --prefix mpv 2>/dev/null || echo /opt/homebrew/opt/mpv)}"
+export PKG_CONFIG_PATH="$MPV_PREFIX/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
 if [ ! -f "$MPV_PREFIX/lib/libmpv.dylib" ]; then
     echo "error: libmpv not found. Run: brew install mpv" >&2
     exit 1

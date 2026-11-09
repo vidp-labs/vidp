@@ -11,6 +11,7 @@ final class PlayerView: NSView {
     private(set) var fileLoaded = false
     private(set) var currentPath: String?
     private var currentMedia: MediaInfo?
+    private var lastPaused: Bool?
     private var playbackBackend: PlayerViewBackend!
     private var playbackEngine: PlaybackEngine!
 
@@ -168,7 +169,18 @@ final class PlayerView: NSView {
             super.keyDown(with: event)
             return
         }
-        guard fileLoaded else { return }
+        guard fileLoaded else {
+            // Block video controls on the homepage; other keys keep normal handling.
+            switch event.keyCode {
+            case 123, 124, 125, 126: return
+            default:
+                guard !["f", "p", "m", " ", "l", "h"].contains(event.characters ?? "") else {
+                    return
+                }
+                super.keyDown(with: event)
+                return
+            }
+        }
         switch event.keyCode {
         case 124:  // →
             seek(seconds: event.modifierFlags.contains(.shift) ? 30 : 10)
@@ -295,6 +307,7 @@ final class PlayerView: NSView {
                 }
             }
         }
+        emitStateChange()
         if fileLoaded {
             delegate?.playerDidSeek(seconds: seconds)
         }
@@ -331,6 +344,7 @@ final class PlayerView: NSView {
                 }
             }
         }
+        emitStateChange()
     }
 
     func boolProperty(_ name: String) -> Bool? {
@@ -609,14 +623,23 @@ final class PlayerView: NSView {
             }())
     }
 
+    private func emitStateChange() {
+        playbackBackend.eventHandler?(
+            .stateChanged(playbackState(isPaused: boolProperty("pause") ?? true)))
+    }
+
     private func handlePlaybackEvent(_ event: PlaybackEvent) {
         switch event {
         case .mediaLoaded:
+            lastPaused = boolProperty("pause") ?? true
             delegate?.playerDidFileLoad()
             restoreSavedTracks()
         case .stateChanged(let state):
-            // Use mpv's live pause state.
+            // Use mpv's live pause state. Commands such as volume or seek also emit
+            // state changes; only a real pause change should reach the UI.
             let paused = boolProperty("pause") ?? state.isPaused
+            guard paused != lastPaused else { break }
+            lastPaused = paused
             delegate?.playerDidUpdatePlaybackState(isPaused: paused)
         case .videoSizeChanged(let size):
             delegate?.playerDidUpdateVideoSize(width: Int64(size.width), height: Int64(size.height))
