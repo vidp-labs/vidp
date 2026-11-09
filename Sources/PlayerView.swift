@@ -1,5 +1,6 @@
 import AppKit
 import CMPV
+import VidpEngine
 
 final class PlayerView: NSView {
     private(set) var mpv: OpaquePointer?
@@ -9,6 +10,10 @@ final class PlayerView: NSView {
     var onPiPToggle: (() -> Void)?
     private(set) var fileLoaded = false
     private(set) var currentPath: String?
+    private var currentMedia: MediaInfo?
+    private var lastPaused: Bool?
+    private var playbackBackend: PlayerViewBackend!
+    private var playbackEngine: PlaybackEngine!
 
     private var overlayView: NSView!
     private var titleLabel: NSTextField!
@@ -25,6 +30,13 @@ final class PlayerView: NSView {
         self.layer = layer
         playerLayer = layer
 
+        playbackBackend = PlayerViewBackend(owner: self)
+        playbackEngine = PlaybackEngine(backend: playbackBackend) { [weak self] event in
+            DispatchQueue.main.async {
+                self?.handlePlaybackEvent(event)
+            }
+        }
+
         setupOverlay()
         registerForDraggedTypes([.fileURL])
 
@@ -40,15 +52,18 @@ final class PlayerView: NSView {
 
         let iconView = NSImageView()
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.image = NSImage(systemSymbolName: "arrow.down.doc", accessibilityDescription: "Drop a video file")?
-            .withSymbolConfiguration(NSImage.SymbolConfiguration(
-                pointSize: HomepageEmptyStateStyle.iconPointSize, weight: .regular))
+        iconView.image = NSImage(
+            systemSymbolName: "arrow.down.doc", accessibilityDescription: "Drop a video file")?
+            .withSymbolConfiguration(
+                NSImage.SymbolConfiguration(
+                    pointSize: HomepageEmptyStateStyle.iconPointSize, weight: .regular))
         iconView.contentTintColor = .secondaryLabelColor
         iconView.imageScaling = .scaleProportionallyUpOrDown
         overlayView.addSubview(iconView)
 
         titleLabel = NSTextField(labelWithString: "Drag & drop a video to play")
-        titleLabel.font = .systemFont(ofSize: HomepageEmptyStateStyle.titleFontSize, weight: .medium)
+        titleLabel.font = .systemFont(
+            ofSize: HomepageEmptyStateStyle.titleFontSize, weight: .medium)
         titleLabel.textColor = .labelColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         overlayView.addSubview(titleLabel)
@@ -91,7 +106,8 @@ final class PlayerView: NSView {
             NSAnimationContext.runAnimationGroup { ctx in
                 ctx.duration = 0.2
                 self.overlayView.animator().wantsLayer = true
-                self.overlayView.animator().layer?.backgroundColor = NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
+                self.overlayView.animator().layer?.backgroundColor =
+                    NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
                 self.overlayView.animator().layer?.cornerRadius = 16
             }
             return .copy
@@ -115,8 +131,11 @@ final class PlayerView: NSView {
         let opts: [NSPasteboard.ReadingOptionKey: Any] = [
             .urlReadingContentsConformToTypes: ["public.movie"]
         ]
-        guard let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: opts) as? [URL],
-              let url = urls.first else { return false }
+        guard
+            let urls = sender.draggingPasteboard.readObjects(
+                forClasses: [NSURL.self], options: opts) as? [URL],
+            let url = urls.first
+        else { return false }
         delegate?.playerView(self, didReceiveFile: url.path)
         return true
     }
@@ -150,14 +169,26 @@ final class PlayerView: NSView {
             super.keyDown(with: event)
             return
         }
+        guard fileLoaded else {
+            // Block video controls on the homepage; other keys keep normal handling.
+            switch event.keyCode {
+            case 123, 124, 125, 126: return
+            default:
+                guard !["f", "p", "m", " ", "l", "h"].contains(event.characters ?? "") else {
+                    return
+                }
+                super.keyDown(with: event)
+                return
+            }
+        }
         switch event.keyCode {
-        case 124: // →
+        case 124:  // →
             seek(seconds: event.modifierFlags.contains(.shift) ? 30 : 10)
-        case 123: // ←
+        case 123:  // ←
             seek(seconds: event.modifierFlags.contains(.shift) ? -30 : -10)
-        case 126: // ↑
+        case 126:  // ↑
             adjustVolume(delta: 1)
-        case 125: // ↓
+        case 125:  // ↓
             adjustVolume(delta: -1)
         default:
             switch event.characters {
@@ -180,6 +211,10 @@ final class PlayerView: NSView {
     }
 
     func stop() {
+        playbackEngine.stop()
+    }
+
+    fileprivate func stopBackend() {
         guard let mpv else { return }
         "stop".withCString { cmd in
             var args: [UnsafePointer<CChar>?] = [cmd, nil]
@@ -187,15 +222,32 @@ final class PlayerView: NSView {
         }
         fileLoaded = false
         currentPath = nil
+        currentMedia = nil
         showOverlay()
     }
 
     func cyclePause() {
+        try? playbackEngine.togglePause()
+    }
+
+    fileprivate func cyclePauseBackend() {
         guard let mpv else { return }
         "cycle".withCString { cmd in
             "pause".withCString { prop in
                 var args: [UnsafePointer<CChar>?] = [cmd, prop, nil]
                 mpv_command(mpv, &args)
+            }
+        }
+    }
+
+    fileprivate func pauseBackend() {
+        guard let mpv else { return }
+        "set".withCString { cmd in
+            "pause".withCString { prop in
+                "yes".withCString { val in
+                    var args: [UnsafePointer<CChar>?] = [cmd, prop, val, nil]
+                    mpv_command(mpv, &args)
+                }
             }
         }
     }
@@ -209,6 +261,10 @@ final class PlayerView: NSView {
     }
 
     func unpause() {
+        try? playbackEngine.play()
+    }
+
+    fileprivate func unpauseBackend() {
         guard let mpv else { return }
         "set".withCString { cmd in
             "pause".withCString { prop in
@@ -222,27 +278,26 @@ final class PlayerView: NSView {
 
     func adjustVolume(delta: Int) {
         if boolProperty("mute") == true {
-            setProperty("mute", "no")
+            try? playbackEngine.setMuted(false)
             delegate?.playerDidToggleMute(false)
         }
         let current = Int(intProperty("volume") ?? 100)
         let new = min(100, max(0, current + delta))
-        setProperty("volume", "\(new)")
+        try? playbackEngine.setVolume(Double(new))
         delegate?.playerDidAdjustVolume(new)
     }
 
     func toggleMute() {
-        guard let mpv else { return }
-        "cycle".withCString { cmd in
-            "mute".withCString { prop in
-                var args: [UnsafePointer<CChar>?] = [cmd, prop, nil]
-                mpv_command(mpv, &args)
-            }
-        }
-        delegate?.playerDidToggleMute(boolProperty("mute") ?? false)
+        let muted = !(boolProperty("mute") ?? false)
+        try? playbackEngine.setMuted(muted)
+        delegate?.playerDidToggleMute(muted)
     }
 
     func seek(seconds: Double) {
+        try? playbackEngine.seek(by: seconds)
+    }
+
+    fileprivate func seekBackend(seconds: Double) {
         guard let mpv else { return }
         String(seconds).withCString { val in
             "seek".withCString { cmd in
@@ -252,6 +307,7 @@ final class PlayerView: NSView {
                 }
             }
         }
+        emitStateChange()
         if fileLoaded {
             delegate?.playerDidSeek(seconds: seconds)
         }
@@ -261,16 +317,24 @@ final class PlayerView: NSView {
         let current = doubleProperty("speed") ?? 1.0
         let choices = [0.5, 1.0, 1.5, 2.0]
         let next = choices.first { $0 > current } ?? choices.first ?? 1.0
-        setSpeed(next)
+        try? playbackEngine.setSpeed(next)
     }
 
     func setSpeed(_ speed: Double) {
+        try? playbackEngine.setSpeed(speed)
+    }
+
+    fileprivate func setSpeedBackend(_ speed: Double) {
         let clamped = min(max(speed, 0.5), 2.0)
         let label = String(format: "%.2f", clamped)
         setProperty("speed", label)
     }
 
     func seekAbsolute(_ seconds: Double) {
+        try? playbackEngine.seek(to: seconds)
+    }
+
+    fileprivate func seekAbsoluteBackend(_ seconds: Double) {
         guard let mpv else { return }
         String(seconds).withCString { val in
             "seek".withCString { cmd in
@@ -280,6 +344,7 @@ final class PlayerView: NSView {
                 }
             }
         }
+        emitStateChange()
     }
 
     func boolProperty(_ name: String) -> Bool? {
@@ -317,8 +382,9 @@ final class PlayerView: NSView {
             withUnsafeMutableBytes(of: &initParams) { initBuf in
                 guard let initPtr = initBuf.baseAddress else { return }
                 var params: [mpv_render_param] = [
-                    mpv_render_param(type: MPV_RENDER_PARAM_API_TYPE,
-                                     data: UnsafeMutableRawPointer(mutating: apiType)),
+                    mpv_render_param(
+                        type: MPV_RENDER_PARAM_API_TYPE,
+                        data: UnsafeMutableRawPointer(mutating: apiType)),
                     mpv_render_param(type: MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, data: initPtr),
                     mpv_render_param(),
                 ]
@@ -352,9 +418,14 @@ final class PlayerView: NSView {
     }
 
     func load(path: String) {
+        try? playbackEngine.load(URL(fileURLWithPath: path))
+    }
+
+    fileprivate func loadBackend(path: String) {
         guard let mpv else { return }
         fileLoaded = true
         currentPath = path
+        currentMedia = MediaInfo(url: URL(fileURLWithPath: path))
         "loadfile".withCString { cmd in
             path.withCString { p in
                 var args: [UnsafePointer<CChar>?] = [cmd, p, nil]
@@ -421,6 +492,16 @@ final class PlayerView: NSView {
     }
 
     func setTrack(_ property: String, id: Int) {
+        let kind: TrackKind
+        switch property {
+        case "aid": kind = .audio
+        case "vid": kind = .video
+        default: kind = .subtitle
+        }
+        try? playbackEngine.selectTrack(TrackSelection(kind: kind, id: id == 0 ? nil : id))
+    }
+
+    fileprivate func setTrackBackend(_ property: String, id: Int) {
         guard let mpv else { return }
         let value = id == 0 ? "no" : "\(id)"
         "set".withCString { cmd in
@@ -442,14 +523,20 @@ final class PlayerView: NSView {
         let tracks = trackList()
         func exists(type: String, id: Int) -> Bool {
             if id == 0 { return type == "sub" }
-            return tracks.contains { ($0["type"] as? String) == type && ($0["id"] as? Int64) == Int64(id) }
+            return tracks.contains {
+                ($0["type"] as? String) == type && ($0["id"] as? Int64) == Int64(id)
+            }
         }
-        if let sub = (defaults.object(forKey: "sid:\(path)") as? Int) ?? (defaults.object(forKey: "sid:last") as? Int),
-           exists(type: "sub", id: sub) {
+        if let sub = (defaults.object(forKey: "sid:\(path)") as? Int)
+            ?? (defaults.object(forKey: "sid:last") as? Int),
+            exists(type: "sub", id: sub)
+        {
             setTrack("sid", id: sub)
         }
-        if let audio = (defaults.object(forKey: "aid:\(path)") as? Int) ?? (defaults.object(forKey: "aid:last") as? Int),
-           exists(type: "audio", id: audio) {
+        if let audio = (defaults.object(forKey: "aid:\(path)") as? Int)
+            ?? (defaults.object(forKey: "aid:last") as? Int),
+            exists(type: "audio", id: audio)
+        {
             setTrack("aid", id: audio)
         }
     }
@@ -466,17 +553,22 @@ final class PlayerView: NSView {
                             let w = self?.intProperty("width") ?? 0
                             let h = self?.intProperty("height") ?? 0
                             DispatchQueue.main.async {
-                                self?.delegate?.playerDidUpdateVideoSize(width: w, height: h)
+                                self?.playbackBackend.eventHandler?(
+                                    .videoSizeChanged(
+                                        VideoSize(width: Int(w), height: Int(h))))
                             }
                         } else if name == "pause" {
                             let paused = self?.boolProperty("pause") ?? false
                             DispatchQueue.main.async {
-                                self?.delegate?.playerDidUpdatePlaybackState(isPaused: paused)
+                                self?.playbackBackend.eventHandler?(
+                                    .stateChanged(
+                                        self?.playbackState(isPaused: paused)
+                                            ?? PlaybackState(isPaused: paused)))
                             }
                         } else if name == "eof-reached" {
                             if self?.boolProperty("eof-reached") == true {
                                 DispatchQueue.main.async {
-                                    self?.delegate?.playerDidEndFile()
+                                    self?.playbackBackend.eventHandler?(.ended)
                                 }
                             }
                         }
@@ -489,14 +581,15 @@ final class PlayerView: NSView {
                             let msg = String(cString: mpv_error_string(endFile.pointee.error))
                             DispatchQueue.main.async {
                                 self?.fileLoaded = false
-                                self?.delegate?.playerDidEncounterError(msg)
+                                self?.playbackBackend.eventHandler?(.failed(.failed(msg)))
                             }
                         }
                     }
                 case MPV_EVENT_FILE_LOADED:
                     DispatchQueue.main.async {
-                        self?.delegate?.playerDidFileLoad()
-                        self?.restoreSavedTracks()
+                        if let media = self?.currentMedia {
+                            self?.playbackBackend.eventHandler?(.mediaLoaded(media))
+                        }
                     }
                 case MPV_EVENT_SHUTDOWN:
                     DispatchQueue.main.async { NSApp.terminate(nil) }
@@ -513,9 +606,88 @@ final class PlayerView: NSView {
         AppSettings.applySubtitle(to: mpv)
     }
 
+    private func playbackState(isPaused: Bool) -> PlaybackState {
+        PlaybackState(
+            media: currentMedia,
+            isPaused: isPaused,
+            position: doubleProperty("time-pos"),
+            duration: doubleProperty("duration"),
+            volume: doubleProperty("volume"),
+            isMuted: boolProperty("mute") ?? false,
+            speed: doubleProperty("speed") ?? 1,
+            videoSize: {
+                guard let width = intProperty("width"), let height = intProperty("height") else {
+                    return nil
+                }
+                return VideoSize(width: Int(width), height: Int(height))
+            }())
+    }
+
+    private func emitStateChange() {
+        playbackBackend.eventHandler?(
+            .stateChanged(playbackState(isPaused: boolProperty("pause") ?? true)))
+    }
+
+    private func handlePlaybackEvent(_ event: PlaybackEvent) {
+        switch event {
+        case .mediaLoaded:
+            lastPaused = boolProperty("pause") ?? true
+            delegate?.playerDidFileLoad()
+            restoreSavedTracks()
+        case .stateChanged(let state):
+            // Use mpv's live pause state. Commands such as volume or seek also emit
+            // state changes; only a real pause change should reach the UI.
+            let paused = boolProperty("pause") ?? state.isPaused
+            guard paused != lastPaused else { break }
+            lastPaused = paused
+            delegate?.playerDidUpdatePlaybackState(isPaused: paused)
+        case .videoSizeChanged(let size):
+            delegate?.playerDidUpdateVideoSize(width: Int64(size.width), height: Int64(size.height))
+        case .ended:
+            delegate?.playerDidEndFile()
+        case .failed(let error):
+            if case .failed(let message) = error {
+                delegate?.playerDidEncounterError(message)
+            }
+        }
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
         if let renderCtx { mpv_render_context_free(renderCtx) }
         if let mpv { mpv_destroy(mpv) }
     }
+}
+
+private final class PlayerViewBackend: PlaybackBackend {
+    weak var owner: PlayerView?
+    var eventHandler: (@Sendable (PlaybackEvent) -> Void)?
+
+    init(owner: PlayerView) {
+        self.owner = owner
+    }
+
+    func load(_ media: MediaInfo) throws {
+        owner?.loadBackend(path: media.url.path)
+    }
+
+    func stop() { owner?.stopBackend() }
+    func play() throws { owner?.unpauseBackend() }
+    func pause() throws { owner?.pauseBackend() }
+    func togglePause() throws { owner?.cyclePauseBackend() }
+    func seek(by seconds: Double) throws { owner?.seekBackend(seconds: seconds) }
+    func seek(to seconds: Double) throws { owner?.seekAbsoluteBackend(seconds) }
+    func setVolume(_ value: Double) throws { owner?.setProperty("volume", String(value)) }
+    func setMuted(_ muted: Bool) throws { owner?.setProperty("mute", muted ? "yes" : "no") }
+    func setSpeed(_ value: Double) throws { owner?.setSpeedBackend(value) }
+    func selectTrack(_ track: TrackSelection) throws {
+        let property: String
+        switch track.kind {
+        case .audio: property = "aid"
+        case .video: property = "vid"
+        case .subtitle: property = "sid"
+        }
+        owner?.setTrackBackend(property, id: track.id ?? 0)
+    }
+    func shutdown() {}
 }

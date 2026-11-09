@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 MPV_PREFIX="${MPV_PREFIX:-$(brew --prefix mpv 2>/dev/null || echo /opt/homebrew/opt/mpv)}"
+export PKG_CONFIG_PATH="$MPV_PREFIX/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
 if [ ! -f "$MPV_PREFIX/lib/libmpv.dylib" ]; then
     echo "error: libmpv not found. Run: brew install mpv" >&2
     exit 1
@@ -13,20 +14,10 @@ APP=vidp.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
-swiftc -O -swift-version 5 -target "$(uname -m)-apple-macosx26.0" \
-    -framework AppKit \
-    -framework MediaPlayer \
-    -F/System/Library/PrivateFrameworks \
-    -framework PIP \
-    -import-bridging-header vidp-Bridging-Header.h \
-    -I Sources/CMPV \
-    -I Sources/CPIP \
-    -Xcc -I"$MPV_PREFIX/include" \
-    -L "$MPV_PREFIX/lib" \
-    -lmpv \
-    -Xlinker -rpath -Xlinker @executable_path/../Frameworks \
-    Sources/*.swift \
-    -o "$APP/Contents/MacOS/vidp"
+# Build before reading the output path.
+swift build -c release
+BIN_DIR=$(swift build -c release --show-bin-path)
+cp "$BIN_DIR/Vidp" "$APP/Contents/MacOS/vidp"
 
 cp Info.plist "$APP/Contents/"
 

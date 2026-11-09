@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "swift: Build Debug Vidp",
+      "type": "shell",
+      "command": "swift build -c debug",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$swiftc"]
+    },
+    {
+      "label": "swift: Build Release Vidp",
+      "type": "shell",
+      "command": "swift build -c release",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$swiftc"]
+    },
+    {
+      "label": "swift: Build Debug Vidp (vidp)",
+      "type": "shell",
+      "command": "swift build -c debug",
+      "options": {
+        "cwd": "${workspaceFolder:vidp}"
+      },
+      "problemMatcher": ["$swiftc"]
+    },
+    {
+      "label": "swift: Build Release Vidp (vidp)",
+      "type": "shell",
+      "command": "swift build -c release",
+      "options": {
+        "cwd": "${workspaceFolder:vidp}"
+      },
+      "problemMatcher": ["$swiftc"]
+    }
+  ]
+}

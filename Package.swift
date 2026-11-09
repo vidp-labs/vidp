@@ -6,7 +6,13 @@ let package = Package(
     // The AppKit HUD uses NSGlassEffectView, introduced in macOS 26.
     platforms: [.macOS("26.0")],
     products: [
-        .executable(name: "Vidp", targets: ["Vidp"]),
+        .executable(name: "Vidp", targets: ["Vidp"])
+    ],
+    dependencies: [
+        .package(
+            url: "https://github.com/vidp-labs/vidp-engine.git",
+            exact: "0.2.0"
+        )
     ],
     targets: [
         .systemLibrary(
@@ -18,7 +24,11 @@ let package = Package(
         .systemLibrary(name: "CPIP", path: "Sources/CPIP"),
         .executableTarget(
             name: "Vidp",
-            dependencies: ["CMPV", "CPIP"],
+            dependencies: [
+                "CMPV",
+                "CPIP",
+                .product(name: "VidpEngine", package: "vidp-engine"),
+            ],
             path: "Sources",
             exclude: ["CMPV", "CPIP"],
             linkerSettings: [

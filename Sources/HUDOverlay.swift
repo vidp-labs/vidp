@@ -143,7 +143,8 @@ final class HUDOverlayView: NSView {
         addSubview(topLeftRow)
         NSLayoutConstraint.activate([
             topLeftRow.topAnchor.constraint(equalTo: topAnchor, constant: Self.topControlInset),
-            topLeftRow.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.contentInset),
+            topLeftRow.leadingAnchor.constraint(
+                equalTo: leadingAnchor, constant: Self.contentInset),
         ])
 
         // Top-right: mute + audio + subtitles + speed + pip
@@ -202,8 +203,9 @@ final class HUDOverlayView: NSView {
         addSubview(titleCardView)
 
         titleLabel = NSTextField(labelWithString: "")
-        titleLabel.font = AppSettings.hudFont(named: AppSettings.hudFontName, size: Self.titlePointSize,
-                                          bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
+        titleLabel.font = AppSettings.hudFont(
+            named: AppSettings.hudFontName, size: Self.titlePointSize,
+            bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
         titleLabel.textColor = .white
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.maximumNumberOfLines = 0
@@ -221,18 +223,20 @@ final class HUDOverlayView: NSView {
 
         // Meta line above the title: S01E01 / year at 2/3 size, half opacity
         metaLabel = NSTextField(labelWithString: "")
-        metaLabel.font = AppSettings.hudFont(named: AppSettings.hudFontName,
-                                             size: Self.titlePointSize * Self.metaScale,
-                                             bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
+        metaLabel.font = AppSettings.hudFont(
+            named: AppSettings.hudFontName,
+            size: Self.titlePointSize * Self.metaScale,
+            bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
         metaLabel.textColor = NSColor(white: 1, alpha: 0.5)
         metaLabel.lineBreakMode = .byTruncatingTail
         metaLabel.translatesAutoresizingMaskIntoConstraints = false
         metaLabel.isHidden = true
 
         pausedTitleLabel = NSTextField(labelWithString: "")
-        pausedTitleLabel.font = AppSettings.hudFont(named: AppSettings.hudFontName,
-                                                     size: Self.pausedTitlePointSize,
-                                                     bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
+        pausedTitleLabel.font = AppSettings.hudFont(
+            named: AppSettings.hudFontName,
+            size: Self.pausedTitlePointSize,
+            bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
         pausedTitleLabel.textColor = .white
         pausedTitleLabel.lineBreakMode = .byWordWrapping
         pausedTitleLabel.maximumNumberOfLines = 0
@@ -245,9 +249,10 @@ final class HUDOverlayView: NSView {
         pausedTitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         pausedMetaLabel = NSTextField(labelWithString: "")
-        pausedMetaLabel.font = AppSettings.hudFont(named: AppSettings.hudFontName,
-                                                    size: Self.pausedMetaPointSize,
-                                                    bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
+        pausedMetaLabel.font = AppSettings.hudFont(
+            named: AppSettings.hudFontName,
+            size: Self.pausedMetaPointSize,
+            bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
         pausedMetaLabel.textColor = metaLabel.textColor
         pausedMetaLabel.lineBreakMode = .byTruncatingTail
         pausedMetaLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -282,8 +287,9 @@ final class HUDOverlayView: NSView {
         remainingLabel.textColor = NSColor(white: 1, alpha: 0.6)
         remainingLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        progressBar = ScrubSlider(value: 0, minValue: 0, maxValue: 1,
-                               target: self, action: #selector(scrubChanged))
+        progressBar = ScrubSlider(
+            value: 0, minValue: 0, maxValue: 1,
+            target: self, action: #selector(scrubChanged))
         progressBar.isContinuous = true
         progressBar.trackFillColor = AppSettings.progressNSColor
         progressBar.translatesAutoresizingMaskIntoConstraints = false
@@ -319,9 +325,11 @@ final class HUDOverlayView: NSView {
             titleCardView.trailingAnchor.constraint(equalTo: trailingAnchor),
             titleCardView.topAnchor.constraint(equalTo: topAnchor),
             titleCardView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            titleStack.leadingAnchor.constraint(equalTo: barRow.leadingAnchor, constant: Self.titleTextInset),
+            titleStack.leadingAnchor.constraint(
+                equalTo: barRow.leadingAnchor, constant: Self.titleTextInset),
             titleStack.trailingAnchor.constraint(equalTo: barRow.trailingAnchor),
-            titleStack.topAnchor.constraint(equalTo: titleCardView.topAnchor, constant: Self.topControlInset),
+            titleStack.topAnchor.constraint(
+                equalTo: titleCardView.topAnchor, constant: Self.topControlInset),
             pausedTitleAccentView.leadingAnchor.constraint(equalTo: barRow.leadingAnchor),
             pausedTitleAccentView.widthAnchor.constraint(equalToConstant: Self.titleAccentWidth),
             pausedTitleAccentView.topAnchor.constraint(equalTo: titleStack.topAnchor),
@@ -335,7 +343,8 @@ final class HUDOverlayView: NSView {
             titleAccentView.widthAnchor.constraint(equalToConstant: Self.titleAccentWidth),
             titleAccentView.topAnchor.constraint(equalTo: metaLabel.topAnchor),
             titleAccentView.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: barRow.leadingAnchor, constant: Self.titleTextInset),
+            titleLabel.leadingAnchor.constraint(
+                equalTo: barRow.leadingAnchor, constant: Self.titleTextInset),
             titleLabel.bottomAnchor.constraint(equalTo: barRow.topAnchor, constant: -8),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: barRow.trailingAnchor),
             metaLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
@@ -348,16 +357,20 @@ final class HUDOverlayView: NSView {
 
         metaHeight = metaLabel.heightAnchor.constraint(equalToConstant: 0)
         metaHeight.isActive = true
-        metaLabel.bottomAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -2).isActive = true
+        metaLabel.bottomAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -2).isActive =
+            true
 
-        controlViews = [transportStack, topLeftRow, topRow, barRow, bottomRightRow,
-                        titleAccentView, titleLabel, metaLabel]
+        controlViews = [
+            transportStack, topLeftRow, topRow, barRow, bottomRightRow,
+            titleAccentView, titleLabel, metaLabel,
+        ]
         controlViews.forEach { $0.alphaValue = 1 }
 
-        addTrackingArea(NSTrackingArea(
-            rect: .zero,
-            options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect],
-            owner: self))
+        addTrackingArea(
+            NSTrackingArea(
+                rect: .zero,
+                options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect],
+                owner: self))
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(settingsDidChange),
@@ -376,10 +389,13 @@ final class HUDOverlayView: NSView {
 
     // MARK: - Transport buttons
 
-    private func makeTransportButton(symbol: String, pointSize: CGFloat,
-                                     diameter: CGFloat, action: Selector) -> NSGlassEffectView {
+    private func makeTransportButton(
+        symbol: String, pointSize: CGFloat,
+        diameter: CGFloat, action: Selector
+    ) -> NSGlassEffectView {
         let config = NSImage.SymbolConfiguration(pointSize: pointSize, weight: .medium)
-        let img = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)?
+        let img =
+            NSImage(systemSymbolName: symbol, accessibilityDescription: nil)?
             .withSymbolConfiguration(config) ?? NSImage()
 
         let button = NSButton(image: img, target: self, action: action)
@@ -400,11 +416,26 @@ final class HUDOverlayView: NSView {
         return glass
     }
 
-    @objc private func rewindTapped() { playerView?.seek(seconds: -10); resetHideTimer() }
-    @objc private func playTapped()   { playerView?.cyclePause(); resetHideTimer() }
-    @objc private func forwardTapped(){ playerView?.seek(seconds: 10); resetHideTimer() }
-    @objc private func backTapped()   { onBack?(); resetHideTimer() }
-    @objc private func supportTapped() { onSupport?(); resetHideTimer() }
+    @objc private func rewindTapped() {
+        playerView?.seek(seconds: -10)
+        resetHideTimer()
+    }
+    @objc private func playTapped() {
+        playerView?.cyclePause()
+        resetHideTimer()
+    }
+    @objc private func forwardTapped() {
+        playerView?.seek(seconds: 10)
+        resetHideTimer()
+    }
+    @objc private func backTapped() {
+        onBack?()
+        resetHideTimer()
+    }
+    @objc private func supportTapped() {
+        onSupport?()
+        resetHideTimer()
+    }
 
     private func showTrackMenu(type: String, property: String, for button: NSView) {
         guard let pv = playerView else { return }
@@ -417,7 +448,9 @@ final class HUDOverlayView: NSView {
             off.target = self
             off.representedObject = property
             off.tag = 0
-            let current = pv.trackList().first { ($0["type"] as? String) == type && ($0["selected"] as? Int64) == 1 }
+            let current = pv.trackList().first {
+                ($0["type"] as? String) == type && ($0["selected"] as? Int64) == 1
+            }
             if current == nil { off.state = .on }
             menu.addItem(off)
         }
@@ -539,9 +572,10 @@ final class HUDOverlayView: NSView {
         applyPausedMetaStyle()
         // layout() no longer runs per-pass, so this is what carries a font change
         // to the OSD label.
-        volumeLabel?.font = AppSettings.hudFont(named: AppSettings.hudFontName,
-                                                size: Self.titlePointSize * Self.osdScale,
-                                                bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
+        volumeLabel?.font = AppSettings.hudFont(
+            named: AppSettings.hudFontName,
+            size: Self.titlePointSize * Self.osdScale,
+            bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
         needsLayout = true
     }
 
@@ -619,7 +653,8 @@ final class HUDOverlayView: NSView {
         // smoothly instead of jumping in 250ms steps.
         if target != progressBar.doubleValue {
             smoothTimer?.invalidate()
-            smoothTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
+            smoothTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true) {
+                [weak self] _ in
                 guard let self else { return }
                 let current = self.progressBar.doubleValue
                 let delta = target - current
@@ -662,10 +697,11 @@ final class HUDOverlayView: NSView {
         for area in trackingAreas where area.owner === self {
             removeTrackingArea(area)
         }
-        addTrackingArea(NSTrackingArea(
-            rect: .zero,
-            options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect],
-            owner: self))
+        addTrackingArea(
+            NSTrackingArea(
+                rect: .zero,
+                options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect],
+                owner: self))
     }
 
     override func mouseMoved(with event: NSEvent) {
@@ -820,7 +856,8 @@ final class HUDOverlayView: NSView {
             (volumeStack ?? volumeLabel)?.animator().alphaValue = 0.5
         }
         volumeHideTimer?.invalidate()
-        volumeHideTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [weak self] _ in
+        volumeHideTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) {
+            [weak self] _ in
             NSAnimationContext.runAnimationGroup { ctx in
                 ctx.duration = 0.3
                 (self?.volumeStack ?? self?.volumeLabel)?.animator().alphaValue = 0
@@ -848,7 +885,8 @@ final class HUDOverlayView: NSView {
 
     private func startDisplayTimer() {
         displayTimer?.invalidate()
-        displayTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+        displayTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) {
+            [weak self] _ in
             self?.updateDisplay()
         }
         updateDisplay()
@@ -922,12 +960,14 @@ final class HUDOverlayView: NSView {
     }
 
     private func applyPausedTitleStyle(text: String? = nil) {
-        applyHaloStyle(to: pausedTitleLabel, color: .white, size: Self.pausedTitlePointSize, text: text)
+        applyHaloStyle(
+            to: pausedTitleLabel, color: .white, size: Self.pausedTitlePointSize, text: text)
     }
 
     private func applyPausedMetaStyle() {
-        applyHaloStyle(to: pausedMetaLabel, color: NSColor(white: 1, alpha: 0.5),
-                       size: Self.pausedMetaPointSize)
+        applyHaloStyle(
+            to: pausedMetaLabel, color: NSColor(white: 1, alpha: 0.5),
+            size: Self.pausedMetaPointSize)
     }
 
     /// Font first: with an empty label this is the only thing that applies a
@@ -936,10 +976,13 @@ final class HUDOverlayView: NSView {
     /// NB: no .strokeWidth on purpose. AppKit centers a negative stroke on the
     /// glyph path, so half of it eats the fill; a zero-offset shadow renders
     /// fully outside the glyphs, like mpv's subtitle border.
-    private func applyHaloStyle(to label: NSTextField, color: NSColor,
-                                size: CGFloat, text: String? = nil) {
-        let font = AppSettings.hudFont(named: AppSettings.hudFontName, size: size,
-                                       bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
+    private func applyHaloStyle(
+        to label: NSTextField, color: NSColor,
+        size: CGFloat, text: String? = nil
+    ) {
+        let font = AppSettings.hudFont(
+            named: AppSettings.hudFontName, size: size,
+            bold: AppSettings.hudBold, italic: AppSettings.hudItalic)
         label.font = font
         let string = text ?? label.attributedStringValue.string
         guard !string.isEmpty else {
@@ -956,10 +999,12 @@ final class HUDOverlayView: NSView {
         halo.shadowColor = NSColor(white: 0, alpha: color.alphaComponent)
         halo.shadowBlurRadius = CGFloat(AppSettings.hudBorderSize) * 2
         halo.shadowOffset = .zero
-        label.attributedStringValue = NSAttributedString(string: string, attributes: [
-            .font: font,
-            .foregroundColor: color,
-            .shadow: halo,
-        ])
+        label.attributedStringValue = NSAttributedString(
+            string: string,
+            attributes: [
+                .font: font,
+                .foregroundColor: color,
+                .shadow: halo,
+            ])
     }
 }

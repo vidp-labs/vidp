@@ -1,5 +1,4 @@
 {
-  "swift.buildArguments": ["--build-system", "native"],
   "files.associations": {
     "Sources/CPIP/include/PIP.h": "objective-c"
   }
