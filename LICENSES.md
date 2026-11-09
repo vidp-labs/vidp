@@ -10,14 +10,15 @@ distributed app. The authoritative licence text for each library is the one
 provided by its own source distribution.
 
 The actual GPL-3.0 and LGPL-2.1 texts used by the bundled components are
-included in the `licenses/` directory and copied into each app bundle. Each
-library's own licence and notice files are also copied into
-`licenses/<package>/` in the bundle (using the Homebrew package name), and the
-resolved versions are recorded in `licenses/VERSIONS.txt`. The corresponding
-Vidp source and build scripts are available from the matching release tag in
-this repository. Source for third-party components is available from the
-upstream links below and under the written offer in
-[SOURCE-OFFER.md](SOURCE-OFFER.md).
+included in the `licenses/` directory and copied into each app bundle. On every
+release, `scripts/build.sh` also copies each bundled Homebrew package's
+root-level licence and notice files into
+`Contents/Resources/licenses/<package>/` and records the resolved package
+versions in `Contents/Resources/licenses/VERSIONS.txt`. The corresponding Vidp
+source and build scripts are available from the matching release tag in this
+repository. Source for third-party components is available from the upstream
+links below and under the written [source offer](SOURCE-OFFER.md) for the GPL-
+and LGPL-licensed components.
 
 ## Copyleft
 
@@ -85,6 +86,23 @@ each library is copied into `licenses/<package>/` in the app bundle.
 | libsamplerate | BSD-2-Clause |
 
 `zlib` is provided by macOS (`/usr/lib/libz.1.dylib`) and is not bundled.
+
+## Release obligations
+
+The main obligations are:
+
+- **GPL:** preserve the license, provide the corresponding source, and keep the
+  GPL freedoms for the combined release build.
+- **LGPL:** preserve the license and notices, provide the corresponding source,
+  and keep the relinking rights required by the license.
+- **MPL:** preserve the license and its file-level terms for covered files, make
+  the covered source available, and state where it is available.
+- **BSD, ISC, MIT, Zlib, Apache, and similar licenses:** preserve the required
+  copyright, license, and notice text. Apache-licensed components also retain
+  their applicable NOTICE and patent terms.
+
+The exact license text and obligations for a shipped version are the ones in
+the release bundle and the corresponding upstream source distribution.
 
 ## Determining what is actually bundled
 
