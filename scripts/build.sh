@@ -46,7 +46,6 @@ mkdir -p "$APP/Contents/Resources/licenses"
 cp LICENSE "$APP/Contents/Resources/LICENSE"
 cp LICENSES.md "$APP/Contents/Resources/LICENSES.md"
 cp SOURCE-OFFER.md "$APP/Contents/Resources/SOURCE-OFFER.md"
-cp licenses/GPL-2.0-or-later.txt "$APP/Contents/Resources/licenses/GPL-2.0-or-later.txt"
 cp licenses/GPL-3.0-or-later.txt "$APP/Contents/Resources/licenses/GPL-3.0-or-later.txt"
 cp licenses/LGPL-2.1-or-later.txt "$APP/Contents/Resources/licenses/LGPL-2.1-or-later.txt"
 

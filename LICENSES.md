@@ -9,8 +9,8 @@ This file records the third-party licence notices and obligations for the
 distributed app. The authoritative licence text for each library is the one
 provided by its own source distribution.
 
-The actual GPL-2.0, GPL-3.0 and LGPL-2.1 texts used by the bundled components
-are included in the `licenses/` directory and copied into each app bundle. Each
+The actual GPL-3.0 and LGPL-2.1 texts used by the bundled components are
+included in the `licenses/` directory and copied into each app bundle. Each
 library's own licence and notice files are also copied into
 `licenses/<package>/` in the bundle (using the Homebrew package name), and the
 resolved versions are recorded in `licenses/VERSIONS.txt`. The corresponding
