@@ -99,6 +99,16 @@ libmpv into the app itself, so end users need none of this.
 - Check for updates via GitHub API (automatic on launch + manual menu item)
 - Uninstall support with full cleanup or app-only removal
 
+## Repository boundary
+
+This repository is the official Vidp application. It owns the AppKit UI,
+branding, navigation, settings, update flow, signing, and release packaging.
+
+The reusable playback contract and engine logic live in
+[`vidp-engine`](https://github.com/vidp-labs/vidp-engine). Vidp pins an exact
+engine release, while this repository remains responsible for the app around
+it, including the native renderer and bundled dependencies.
+
 ## Notes
 
 - The app is ad-hoc signed, not notarized. Cask installs strip the quarantine
