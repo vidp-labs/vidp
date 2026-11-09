@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "vidp-engine",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vidp-labs/vidp-engine.git",
+      "state" : {
+        "revision" : "bf03df7abc0a2496b2ec6bd80603dd0a214be6bd",
+        "version" : "0.2.0"
+      }
+    }
+  ],
+  "version" : 2
+}

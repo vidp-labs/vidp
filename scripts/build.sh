@@ -13,20 +13,10 @@ APP=vidp.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
-swiftc -O -swift-version 5 -target "$(uname -m)-apple-macosx26.0" \
-    -framework AppKit \
-    -framework MediaPlayer \
-    -F/System/Library/PrivateFrameworks \
-    -framework PIP \
-    -import-bridging-header vidp-Bridging-Header.h \
-    -I Sources/CMPV \
-    -I Sources/CPIP \
-    -Xcc -I"$MPV_PREFIX/include" \
-    -L "$MPV_PREFIX/lib" \
-    -lmpv \
-    -Xlinker -rpath -Xlinker @executable_path/../Frameworks \
-    Sources/*.swift \
-    -o "$APP/Contents/MacOS/vidp"
+# Build before reading the output path.
+swift build -c release
+BIN_DIR=$(swift build -c release --show-bin-path)
+cp "$BIN_DIR/Vidp" "$APP/Contents/MacOS/vidp"
 
 cp Info.plist "$APP/Contents/"
 
