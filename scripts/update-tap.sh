@@ -93,19 +93,41 @@ printf '%s\n' "$CASK" > "$TAP_DIR/Casks/vidp.rb"
     # non-fast-forward.
     git push --quiet origin ":$BR" 2>/dev/null || true
     git push -u origin "$BR"
-    # gh pr create prints the URL on stdout; keep it for the failure handler below.
+    # Keep the PR URL for status checks and recovery messages.
     TAP_PR_URL=$(gh pr create --base main --head "$BR" --title "vidp $VERSION" \
         --body "Releases vidp v$VERSION.")
-    # Runs after the GitHub Release is already published, so a failure here is a
-    # half-published release: v$VERSION is live but Homebrew still serves the
-    # previous version. Name the PR instead of aborting silently.
-    gh pr merge --merge --delete-branch || {
-        echo "error: could not merge the tap PR, so Homebrew is not updated yet." >&2
-        echo "       GitHub Release v$VERSION IS published — only the tap update failed." >&2
-        echo "       Merge this PR to finish, then 'brew update && brew upgrade vidp':" >&2
+    gh pr merge "$TAP_PR_URL" --auto --merge || {
+        echo "error: could not queue the tap PR for auto-merge." >&2
+        echo "       GitHub Release v$VERSION is published, but Homebrew is not updated." >&2
+        echo "       Check auto-merge is enabled and inspect this PR:" >&2
         echo "         $TAP_PR_URL" >&2
         exit 1
     }
+
+    for attempt in {1..60}; do
+        STATE=$(gh pr view "$TAP_PR_URL" --json state --jq '.state')
+        if [ "$STATE" = "MERGED" ]; then
+            break
+        elif [ "$STATE" = "CLOSED" ]; then
+            echo "::error::Tap PR was closed without merging: $TAP_PR_URL" >&2
+            exit 1
+        fi
+        echo "Waiting for tap PR CI and auto-merge (attempt $attempt/60)"
+        sleep 30
+    done
+
+    STATE=$(gh pr view "$TAP_PR_URL" --json state --jq '.state')
+    [ "$STATE" = "MERGED" ] || {
+        echo "::error::Tap PR did not merge after waiting for CI: $TAP_PR_URL" >&2
+        echo "       GitHub Release v$VERSION is already published; do not rerun the release workflow." >&2
+        echo "       Fix the PR checks or auto-merge setting, then merge this PR to finish the tap update." >&2
+        exit 1
+    }
+
+    # Auto-merge ignores --delete-branch, so remove the head ref after merge.
+    if gh api "repos/$TAP/git/ref/heads/$BR" >/dev/null 2>&1; then
+        gh api --method DELETE "repos/$TAP/git/refs/heads/$BR" || true
+    fi
 )
 
 echo "Tap updated to vidp $VERSION"

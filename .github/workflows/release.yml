@@ -25,8 +25,8 @@ on:
         required: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 jobs:
   publish:
@@ -37,7 +37,20 @@ jobs:
       version: ${{ steps.resolve.outputs.version }}
       sha: ${{ steps.build.outputs.sha }}
     steps:
+      - name: Create release App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: vidp-labs
+          repositories: vidp
+          permission-contents: write
+          permission-pull-requests: write
+
       - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       # GITHUB_TOKEN cannot reach another repo, so the tap needs its own token.
       # An expired or revoked token is still a non-empty string, so test it.
@@ -89,7 +102,7 @@ jobs:
       - name: Bump version
         env:
           VERSION: ${{ steps.resolve.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -121,24 +134,44 @@ jobs:
 
           PR_URL=$(gh pr create --base main --head "$BR" --title "Release v$VERSION" \
             --body "Bumps the version to $VERSION for release." --label release-bump)
-          gh pr merge --merge --delete-branch || {
+          gh pr merge "$PR_URL" --auto --merge || {
             echo "error: could not merge $BR into main automatically." >&2
             echo "       The version bump is committed and pushed, and its PR is still open:" >&2
             echo "         $PR_URL" >&2
-            echo "       Re-run this workflow once it is merged." >&2
             exit 1
           }
 
-          # Build the merged commit, not the bump commit.
-          git checkout main
+          for attempt in {1..60}; do
+            STATE=$(gh pr view "$PR_URL" --json state --jq '.state')
+            if [ "$STATE" = "MERGED" ]; then
+              break
+            elif [ "$STATE" = "CLOSED" ]; then
+              echo "::error::Release PR was closed without merging"
+              exit 1
+            fi
+            echo "Waiting for release PR CI and auto-merge (attempt $attempt/60)"
+            sleep 30
+          done
+
+          STATE=$(gh pr view "$PR_URL" --json state --jq '.state')
+          [ "$STATE" = "MERGED" ] || {
+            echo "::error::Release PR did not merge after waiting for CI"
+            exit 1
+          }
+
+          # Auto-merge does not honor --delete-branch; clean up after merge.
+          if gh api "repos/vidp-labs/vidp/git/ref/heads/$BR" >/dev/null 2>&1; then
+            gh api --method DELETE "repos/vidp-labs/vidp/git/refs/heads/$BR" || true
+          fi
+
           git fetch origin main
-          git reset --hard origin/main
+          git checkout -B main origin/main
 
       - name: Build, verify and publish
         id: build
         env:
           VERSION: ${{ steps.resolve.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
           ARCHIVE=vidp.app.zip
