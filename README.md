@@ -141,6 +141,9 @@ Release distribution must preserve the source-availability requirements of
 each bundled component's license; see the upstream references in
 [LICENSES.md](LICENSES.md) and the written [source offer](SOURCE-OFFER.md).
 
+See [TRADEMARKS.md](TRADEMARKS.md) for the Vidp name, logo, and official-build
+policy.
+
 This project links against [libmpv](https://mpv.io), which remains under its own
 [LGPL/GPL license](https://github.com/mpv-player/mpv/blob/master/Copyright).
 Release builds ship copies of libmpv, FFmpeg and their dependencies inside the
