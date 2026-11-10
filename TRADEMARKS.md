@@ -46,4 +46,7 @@ The `vidp-engine` name may be used to identify that an application consumes
 the engine, but that use does not grant permission to present the application
 as the official Vidp app.
 
+For GPL combined works, this policy does not change the permissions in
+[LICENSE section 4](LICENSE); it governs only the Vidp brand assets.
+
 For permission questions, open an issue in the [Vidp repository](https://github.com/vidp-labs/vidp/issues).
