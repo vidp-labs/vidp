@@ -109,6 +109,9 @@ The reusable playback contract and engine logic live in
 engine release, while this repository remains responsible for the app around
 it, including the native renderer and bundled dependencies.
 
+Future platform shells are planned around the same engine boundary. See the
+[platform shell roadmap](docs/PLATFORM-ROADMAP.md).
+
 ## Notes
 
 - The app is ad-hoc signed, not notarized. Cask installs strip the quarantine
