@@ -43,7 +43,7 @@ jobs:
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
-          owner: vidp-labs
+          owner: vidplabs
           repositories: vidp
           permission-contents: write
           permission-pull-requests: write
@@ -65,7 +65,7 @@ jobs:
           fi
           # Read the value, not just the exit code: a token with read but not
           # push prints false and still exits 0, which would fail mid-publish.
-          [ "$(gh api repos/vidp-labs/homebrew-vidp --jq '.permissions.push')" = true ] \
+          [ "$(gh api repos/vidplabs/homebrew-vidp --jq '.permissions.push')" = true ] \
             || { echo "::error::HOMEBREW_TAP_TOKEN cannot push to the tap repo"; exit 1; }
 
       # Unlike QuickTodo's SwiftPM build, build.sh links libmpv: the bundle is
@@ -160,8 +160,8 @@ jobs:
           }
 
           # Auto-merge does not honor --delete-branch; clean up after merge.
-          if gh api "repos/vidp-labs/vidp/git/ref/heads/$BR" >/dev/null 2>&1; then
-            gh api --method DELETE "repos/vidp-labs/vidp/git/refs/heads/$BR" || true
+          if gh api "repos/vidplabs/vidp/git/ref/heads/$BR" >/dev/null 2>&1; then
+            gh api --method DELETE "repos/vidplabs/vidp/git/refs/heads/$BR" || true
           fi
 
           git fetch origin main
@@ -202,9 +202,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: vidp-labs/homebrew-vidp
+          repository: vidplabs/homebrew-vidp
           ref: main
-          path: vidp-labs/homebrew-vidp
+          path: vidplabs/homebrew-vidp
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
 
       - uses: actions/checkout@v4
@@ -218,4 +218,4 @@ jobs:
           SHA: ${{ needs.publish.outputs.sha }}
         run: |
           set -euo pipefail
-          TAP_DIR=vidp-labs/homebrew-vidp ./app/scripts/update-tap.sh "$VERSION" "$SHA"
+          TAP_DIR=vidplabs/homebrew-vidp ./app/scripts/update-tap.sh "$VERSION" "$SHA"

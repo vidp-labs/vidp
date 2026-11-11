@@ -3,14 +3,14 @@
 A minimal, keyboard-driven macOS video player built on [libmpv](https://mpv.io), written in Swift/AppKit.
 No Electron, no bloat — just a fast native player that plays nearly anything mpv can.
 
-<img src="https://vidp-labs.github.io/screenshots/paused.png" alt="Vidp playing a video, with the transport controls and the film title at the bottom" width="300">
+<img src="https://vidplabs.github.io/screenshots/paused.png" alt="Vidp playing a video, with the transport controls and the film title at the bottom" width="300">
 
 ## Install
 
 ### via Homebrew (recommended)
 
 ```sh
-brew tap vidp-labs/vidp
+brew tap vidplabs/vidp
 brew install --cask vidp
 ```
 
@@ -105,7 +105,7 @@ This repository is the official Vidp application. It owns the AppKit UI,
 branding, navigation, settings, update flow, signing, and release packaging.
 
 The reusable playback contract and engine logic live in
-[`vidp-engine`](https://github.com/vidp-labs/vidp-engine). Vidp pins an exact
+[`vidp-engine`](https://github.com/vidplabs/vidp-engine). Vidp pins an exact
 engine release, while this repository remains responsible for the app around
 it, including the native renderer and bundled dependencies.
 
@@ -156,9 +156,9 @@ puts the distributed app under GPL-3.0-or-later terms.
 
 ## Links
 
-- Homepage: <https://vidp-labs.github.io/>
-- Homebrew tap: [vidp-labs/homebrew-vidp](https://github.com/vidp-labs/homebrew-vidp)
-- Releases: <https://github.com/vidp-labs/vidp/releases>
+- Homepage: <https://vidplabs.github.io/>
+- Homebrew tap: [vidplabs/homebrew-vidp](https://github.com/vidplabs/homebrew-vidp)
+- Releases: <https://github.com/vidplabs/vidp/releases>
 
 ## Releases
 
@@ -172,7 +172,7 @@ From the terminal, `gh workflow run release.yml -f bump=minor` does the same.
 
 One-time setup: the workflow pushes to the tap using the repository secret
 `HOMEBREW_TAP_TOKEN` (Settings → Secrets and variables → Actions). It needs
-write access to `vidp-labs/homebrew-vidp` — the default `GITHUB_TOKEN` cannot
+write access to `vidplabs/homebrew-vidp` — the default `GITHUB_TOKEN` cannot
 reach another repo, so without it the release publishes and only the tap
 update fails.
 
