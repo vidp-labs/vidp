@@ -3,7 +3,7 @@
     {
       "identity" : "vidp-engine",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vidp-labs/vidp-engine.git",
+      "location" : "https://github.com/vidplabs/vidp-engine.git",
       "state" : {
         "revision" : "a2286fa892df881beea0d2cc25f2ca69ea3b43b9",
         "version" : "0.2.1"

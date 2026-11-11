@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/vidp-labs/vidp-engine.git",
+            url: "https://github.com/vidplabs/vidp-engine.git",
             exact: "0.2.1"
         )
     ],

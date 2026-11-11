@@ -3,8 +3,8 @@ vidp.app/
 AppIcon.iconset/
 .DS_Store
 
-# Parent of the tap clone that update-tap.sh checks out to vidp-labs/ and removes.
-/vidp-labs/
+# Parent of the tap clone that update-tap.sh checks out to vidplabs/ and removes.
+/vidplabs/
 .build/
 
 # Keep the Swift extension's project launch configuration in version control.

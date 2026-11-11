@@ -16,7 +16,7 @@ policy applies whether or not a mark is registered.
 
 ## Official builds
 
-An official Vidp build is published by the `vidp-labs` organization through
+An official Vidp build is published by the `vidplabs` organization through
 the Vidp repository's releases or the official Homebrew tap. A modified build,
 fork, or third-party package is not an official Vidp build.
 
@@ -49,4 +49,4 @@ as the official Vidp app.
 For GPL combined works, this policy does not change the permissions in
 [LICENSE section 4](LICENSE); it governs only the Vidp brand assets.
 
-For permission questions, open an issue in the [Vidp repository](https://github.com/vidp-labs/vidp/issues).
+For permission questions, open an issue in the [Vidp repository](https://github.com/vidplabs/vidp/issues).

@@ -10,7 +10,7 @@ release was last distributed. The source will be provided to any
 recipient of that release who makes a written request through the Vidp issue
 tracker:
 
-<https://github.com/vidp-labs/vidp/issues>
+<https://github.com/vidplabs/vidp/issues>
 
 Please include the exact Vidp release version and the component source being
 requested. The source offer covers the corresponding source required by the

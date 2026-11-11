@@ -24,7 +24,7 @@ and LGPL-licensed components.
 
 These are **copyleft** licences. Bundling them makes the distributed `vidp.app`
 a combined work, so the corresponding source for the build must remain
-available. `vidp`'s own source is public at <https://github.com/vidp-labs/vidp>,
+available. `vidp`'s own source is public at <https://github.com/vidplabs/vidp>,
 and every bundled library's source is obtainable from its upstream project.
 
 | Library | Licence | Upstream |
