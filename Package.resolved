@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vidplabs/vingine.git",
       "state" : {
-        "revision" : "a2286fa892df881beea0d2cc25f2ca69ea3b43b9",
-        "version" : "0.2.1"
+        "revision" : "d3acaa6d44eb6786305b0378677994c7a772c6fa",
+        "version" : "0.2.3"
       }
     }
   ],
