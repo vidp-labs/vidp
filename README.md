@@ -105,9 +105,10 @@ This repository is the official Vidp application. It owns the AppKit UI,
 branding, navigation, settings, update flow, signing, and release packaging.
 
 The reusable playback contract and engine logic live in
-[`vidp-engine`](https://github.com/vidplabs/vidp-engine). Vidp pins an exact
-engine release, while this repository remains responsible for the app around
-it, including the native renderer and bundled dependencies.
+[Vingine](https://github.com/vidplabs/vingine). Its Swift package and module
+remain `VidpEngine` for source compatibility. Vidp pins an exact engine
+release, while this repository remains responsible for the app around it,
+including the native renderer and bundled dependencies.
 
 Future platform shells are planned around the same engine boundary. See the
 [platform shell roadmap](docs/PLATFORM-ROADMAP.md).

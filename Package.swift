@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/vidplabs/vidp-engine.git",
+            url: "https://github.com/vidplabs/vingine.git",
             exact: "0.2.1"
         )
     ],
@@ -27,7 +27,7 @@ let package = Package(
             dependencies: [
                 "CMPV",
                 "CPIP",
-                .product(name: "VidpEngine", package: "vidp-engine"),
+                .product(name: "VidpEngine", package: "vingine"),
             ],
             path: "Sources",
             exclude: ["CMPV", "CPIP"],

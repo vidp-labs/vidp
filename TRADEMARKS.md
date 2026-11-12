@@ -25,7 +25,7 @@ fork, or third-party package is not an official Vidp build.
 You may make accurate, non-misleading factual references such as:
 
 - "compatible with Vidp";
-- "based on vidp-engine"; or
+- "based on Vingine"; or
 - "built from the Vidp source release" when that is true.
 
 Keep the required copyright, license, and attribution notices with the work.
@@ -42,9 +42,9 @@ Do not use the Vidp name, logo, icons, or official artwork to:
 A modified or rebranded build must use a distinct name, icon, and visual
 identity. It must also clearly identify itself as unofficial.
 
-The `vidp-engine` name may be used to identify that an application consumes
-the engine, but that use does not grant permission to present the application
-as the official Vidp app.
+The `VidpEngine` name may be used to identify that an application consumes the
+engine, but that use does not grant permission to present the application as
+the official Vidp app.
 
 For GPL combined works, this policy does not change the permissions in
 [LICENSE section 4](LICENSE); it governs only the Vidp brand assets.

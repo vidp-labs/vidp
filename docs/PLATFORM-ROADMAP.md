@@ -1,11 +1,13 @@
 # Platform Shell Roadmap
 
 Vidp currently ships as a native macOS application. Future platform support
-should add native application shells around the shared `vidp-engine` package.
+should add native application shells around the shared `VidpEngine` package in
+the Vingine repository.
 
 ## Shared layer
 
-`vidp-engine` remains platform-neutral and owns the playback contract:
+Vingine remains platform-neutral and owns the playback contract through its
+`VidpEngine` package:
 
 - playback commands and state;
 - media metadata and track selection;
@@ -51,7 +53,7 @@ video rendering integration, packaging, and maintenance cost.
    non-Swift shells can consume an engine release.
 4. Add a Windows shell that consumes a released engine version.
 5. Add a Linux shell after the backend and distribution requirements are clear.
-6. Keep shared playback behavior in `vidp-engine` instead of copying it into a
+6. Keep shared playback behavior in Vingine instead of copying it into a
    shell.
 
 This roadmap does not claim that Windows or Linux support is available today.
