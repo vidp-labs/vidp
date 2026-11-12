@@ -1211,8 +1211,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, Play
             return
         }
         guard playAdjacent(offset: 1) else {
-            playerView.showOverlay()
-            homepageView.setPlaybackActive(false)
+            closeCurrentVideo()
             revealHomepage()
             return
         }
