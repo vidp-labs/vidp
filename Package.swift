@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/vidplabs/vingine.git",
-            exact: "0.2.1"
+            exact: "0.2.3"
         )
     ],
     targets: [
